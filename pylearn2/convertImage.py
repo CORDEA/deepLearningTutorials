@@ -17,9 +17,8 @@
 __Author__ =  "Yoshihiro Tanaka"
 __date__   =  "2015-01-22"
 
-
-from PIL import Image
-from PIL import ImageOps
+import numpy
+from PIL import Image, ImageOps
 import os, sys
 
 _OUTDIR = "out"
@@ -30,8 +29,11 @@ if not os.path.exists(_OUTDIR + "/"):
 
 ls = os.listdir("in/")
 
-for filename in ls:
-    input_image = Image.open("in/" + filename)
-    resize_image = input_image.resize(_SIZE)
-    output_image = ImageOps.grayscale(resize_image)
-    output_image.save(_OUTDIR + "/" + filename)
+with open(sys.argv[1]) as f:
+    for filename in ls:
+        input_image = Image.open("in/" + filename)
+        resize_image = input_image.resize(_SIZE)
+        output_image = ImageOps.grayscale(resize_image)
+        # output_image.save(_OUTDIR + "/" + filename)
+        data = ' '.join([str(r) for r in (numpy.asarray(output_image).flatten() / 255.0).tolist()])
+        f.write(filename + ',' + data + '\n')
