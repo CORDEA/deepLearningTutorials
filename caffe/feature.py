@@ -48,7 +48,7 @@ def main():
     species = 0
     for dirname in  os.listdir(FOLDER):
         files = os.listdir(FOLDER + '/' + dirname)
-        comp.write(' '.join([str(species), dirname]))
+        comp.write(' '.join([str(species), dirname]) + '\n')
         testFlag = True
         for filename in files:
             image = caffe.io.load_image(path.join(FOLDER, dirname, filename))
@@ -60,11 +60,12 @@ def main():
                 feat_edit.append(str(number) + ':' + str(fe))
                 number += 1
 
+            line = ' '.join([str(species)] + feat_edit) + '\n'
             if testFlag:
-                test.write(' '.join([str(species)] + feat_edit) + '\n')
+                test.write(line)
                 testFlag = False
             else:
-                train.write(' '.join([str(species)] + feat_edit) + '\n')
+                train.write(line)
         species += 1
 
     train.close()

@@ -31,11 +31,12 @@ for dirname in os.listdir(FOLDER):
 
     valFlag = True
     for filename in files:
+        line = ' '.join([path.join(FOLDER, dirname, filename), str(species)]) + '\n'
         if valFlag:
-            val.write(' '.join([path.join(FOLDER, dirname, filename), str(species)]))
+            val.write(line)
             valFlag = False
         else:
-            train.write(' '.join([path.join(FOLDER, dirname, filename), str(species)]))
+            train.write(line)
     species += 1
 
 train.close()
