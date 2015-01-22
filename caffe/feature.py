@@ -21,8 +21,8 @@ import sys, os, numpy, caffe
 from os import path
 
 
-def getPATH(path):
-    return path.expanduser(path)
+def getPATH(PATH):
+    return path.expanduser(PATH)
 
 def main():
     # ref. http://techblog.yahoo.co.jp/programming/caffe-intro/
