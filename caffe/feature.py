@@ -41,13 +41,15 @@ def main():
     net.set_raw_scale('data', 255)
     net.set_channel_swap('data', (2,1,0))
 
-    libsvm = open(sys.argv[1], 'w')
-    comp   = open("comparative_table.name", 'w')
+    train = open("train.txt", 'w')
+    test  = open("test.txt", 'w')
+    comp  = open("comparative_table.name", 'w')
 
     species = 0
     for dirname in  os.listdir(FOLDER):
         files = os.listdir(FOLDER + '/' + dirname)
         comp.write(' '.join([str(species), dirname]))
+        testData = True
         for filename in files:
             image = caffe.io.load_image(path.join(FOLDER, dirname, filename))
             net.predict([ image ])
@@ -57,9 +59,16 @@ def main():
             for fe in feat:
                 feat_edit.append(str(number) + ':' + str(fe))
                 number += 1
-            libsvm.write(' '.join([str(species)] + feat_edit) + '\n')
+
+            if testData:
+                test.write(' '.join([str(species)] + feat_edit) + '\n')
+                testData = False
+            else:
+                train.write(' '.join([str(species)] + feat_edit) + '\n')
         species += 1
-    libsvm.close()
+
+    train.close()
+    test.close()
     comp.close()
 
 if __name__=="__main__":
