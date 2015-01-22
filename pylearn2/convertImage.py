@@ -24,16 +24,17 @@ import os, sys
 _OUTDIR = "out"
 _SIZE   = 128, 128
 
-if not os.path.exists(_OUTDIR + "/"):
-    os.system("mkdir " + _OUTDIR)
+#if not os.path.exists(_OUTDIR + '/'):
+#    os.system("mkdir " + _OUTDIR)
 
 ls = os.listdir("in/")
 
-with open(sys.argv[1]) as f:
+with open(sys.argv[1], 'w') as f:
     for filename in ls:
         input_image = Image.open("in/" + filename)
         resize_image = input_image.resize(_SIZE)
         output_image = ImageOps.grayscale(resize_image)
         # output_image.save(_OUTDIR + "/" + filename)
+        # ref. https://github.com/laughing/grbm_sample/blob/master/img2csv.py
         data = ' '.join([str(r) for r in (numpy.asarray(output_image).flatten() / 255.0).tolist()])
-        f.write(filename + ',' + data + '\n')
+        f.write(filename.rstrip(".png") + ',' + data + '\n')
