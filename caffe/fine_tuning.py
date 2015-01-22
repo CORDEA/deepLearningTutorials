@@ -27,15 +27,15 @@ val   = open("val.txt", 'w')
 
 species = 0
 for dirname in os.listdir(FOLDER):
-    files = os.listdir(dirname)
+    files = os.listdir(FOLDER + '/' + dirname)
 
     valFlag = True
     for filename in files:
         if valFlag:
-            val.write(' '.join([path.abspath(filename), str(species)]))
+            val.write(' '.join([path.join(FOLDER, dirname, filename), str(species)]))
             valFlag = False
         else:
-            train.write(' '.join([path.abspath(filename), str(species)]))
+            train.write(' '.join([path.join(FOLDER, dirname, filename), str(species)]))
     species += 1
 
 train.close()
