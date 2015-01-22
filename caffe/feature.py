@@ -18,39 +18,49 @@ __Author__ =  "Yoshihiro Tanaka"
 __date__   =  "2015-01-22"
 
 import sys, os, numpy, caffe
-
-# ref. http://techblog.yahoo.co.jp/programming/caffe-intro/
-
-MEAN_FILE = 'python/caffe/imagenet/ilsvrc_2012_mean.npy'
-MODEL_FILE = 'examples/imagenet/imagenet_feature.prototxt'
-PRETRAINED = 'examples/imagenet/caffe_reference_imagenet_model'
-FOLDER = '~/caffe/101_ObjectCategories/'
-LAYER = 'fc6wi'
-INDEX = 4
-
-net = caffe.Classifier(MODEL_FILE, PRETRAINED)
-net.set_phase_test()
-net.set_mode_cpu()
-net.set_mean('data', numpy.load(MEAN_FILE))
-net.set_raw_scale('data', 255)
-net.set_channel_swap('data', (2,1,0))
+from os import path
 
 
-f = open(sys.argv[1], 'w')
+def getPATH(path):
+    return path.expanduser(path)
 
-species = 0
-for dirname in  os.listdir(os.path.expanduser(FOLDER)):
-    files = os.listdir(dirname)
-    for filename in files:
-        image = caffe.io.load_image(os.path.abspath(filename))
-        net.predict([ image ])
-        feat = net.blobs[LAYER].data[INDEX].flatten().tolist()
-        number = 1
-        feat_edit = []
-        for fe in feat:
-            feat_edit.append(str(number) + ':' + str(fe))
-            number += 1
-        f.write(' '.join([str(species)] + feat_edit) + '\n')
-    species += 1
+def main():
+    # ref. http://techblog.yahoo.co.jp/programming/caffe-intro/
+    MEAN_FILE  = getPATH('~/caffe/python/caffe/imagenet/ilsvrc_2012_mean.npy')
+    MODEL_FILE = getPATH('~/caffe/examples/imagenet/imagenet_feature.prototxt')
+    PRETRAINED = getPATH('~/caffe/examples/imagenet/caffe_reference_imagenet_model')
+    FOLDER     = getPATH('~/caffe/101_ObjectCategories/')
 
-f.close()
+    LAYER = 'fc6wi'
+    INDEX = 4
+
+    net = caffe.Classifier(MODEL_FILE, PRETRAINED)
+    net.set_phase_test()
+    net.set_mode_cpu()
+    net.set_mean('data', numpy.load(MEAN_FILE))
+    net.set_raw_scale('data', 255)
+    net.set_channel_swap('data', (2,1,0))
+
+    libsvm = open(sys.argv[1], 'w')
+    comp   = open("comparative_table.name", 'w')
+
+    species = 0
+    for dirname in  os.listdir(FOLDER):
+        files = os.listdir(FOLDER + '/' + dirname)
+        comp.write(' '.join([str(species), dirname]))
+        for filename in files:
+            image = caffe.io.load_image(path.join(FOLDER, dirname, filename))
+            net.predict([ image ])
+            feat = net.blobs[LAYER].data[INDEX].flatten().tolist()
+            number = 1
+            feat_edit = []
+            for fe in feat:
+                feat_edit.append(str(number) + ':' + str(fe))
+                number += 1
+            libsvm.write(' '.join([str(species)] + feat_edit) + '\n')
+        species += 1
+    libsvm.close()
+    comp.close()
+
+if __name__=="__main__":
+    main()
