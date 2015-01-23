@@ -15,29 +15,12 @@
 # limitations under the License.
 
 __Author__ =  "Yoshihiro Tanaka"
-__date__   =  "2015-01-22"
+__date__   =  "2015-01-23"
 
-import os
-from os import path
+from pylearn2.datasets.csv_dataset import CSVDataset
+import pickle
 
-FOLDER = path.expanduser('~/caffe/101_ObjectCategories/')
 
-train = open("train.txt", 'w')
-val   = open("val.txt", 'w')
-
-species = 0
-for dirname in os.listdir(FOLDER):
-    files = os.listdir(FOLDER + '/' + dirname)
-
-    valFlag = True
-    for filename in files:
-        line = ' '.join([path.join(dirname, filename), str(species)]) + '\n'
-        if valFlag:
-            val.write(line)
-            valFlag = False
-        else:
-            train.write(line)
-    species += 1
-
-train.close()
-val.close()
+# ref. http://tanopy.blog79.fc2.com/blog-entry-118.html
+data = CSVDataset(path='train.csv', expect_headers=False, delimiter=' ')
+pickle.dump(data, open('train.pkl','w'))

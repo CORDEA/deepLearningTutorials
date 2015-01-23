@@ -21,20 +21,26 @@ import numpy
 from PIL import Image, ImageOps
 import os, sys
 
-_OUTDIR = "out"
+_DIR    = "in"
 _SIZE   = 128, 128
 
-#if not os.path.exists(_OUTDIR + '/'):
-#    os.system("mkdir " + _OUTDIR)
+dirs = os.listdir(_DIR + '/')
+train = open("train.txt", 'w')
+comp  = open("comparative_table.name", 'w')
 
-ls = os.listdir("in/")
-
+label = 0
 with open(sys.argv[1], 'w') as f:
-    for filename in ls:
-        input_image = Image.open("in/" + filename)
-        resize_image = input_image.resize(_SIZE)
-        output_image = ImageOps.grayscale(resize_image)
-        # output_image.save(_OUTDIR + "/" + filename)
-        # ref. https://github.com/laughing/grbm_sample/blob/master/img2csv.py
-        data = ' '.join([str(r) for r in (numpy.asarray(output_image).flatten() / 255.0).tolist()])
-        f.write(filename.rstrip(".png") + ',' + data + '\n')
+    for dirname in dirs:
+        files = os.listdir(_DIR + '/' + dirname)
+        for filename in files:
+            input_image = Image.open(path.join(_DIR, dirname, filename))
+            resize_image = input_image.resize(_SIZE)
+            output_image = ImageOps.grayscale(resize_image)
+            # ref. https://github.com/laughing/grbm_sample/blob/master/img2csv.py
+            data = ' '.join([str(r) for r in (numpy.asarray(output_image).flatten() / 255.0).tolist()])
+            train.write(
+                    str(label) # Label information must be Number.
+                    + ',' + data + '\n'
+                    )
+            comp.write(' '.join([str(label), filename.rstrip(".png")]))
+        label += 1
