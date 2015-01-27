@@ -23,9 +23,10 @@ import os, sys
 
 _DIR    = "in"
 _SIZE   = 128, 128
+_DEL    = ','
 
 dirs = os.listdir(_DIR + '/')
-train = open("train.txt", 'w')
+train = open("train.csv", 'w')
 comp  = open("comparative_table.name", 'w')
 
 label = 0
@@ -37,10 +38,10 @@ with open(sys.argv[1], 'w') as f:
             resize_image = input_image.resize(_SIZE)
             output_image = ImageOps.grayscale(resize_image)
             # ref. https://github.com/laughing/grbm_sample/blob/master/img2csv.py
-            data = ' '.join([str(r) for r in (numpy.asarray(output_image).flatten() / 255.0).tolist()])
+            data = _DEL.join([str(r) for r in (numpy.asarray(output_image).flatten() / 255.0).tolist()])
             train.write(
                     str(label) # Label information must be Number.
-                    + ' ' + data + '\n'
+                    + _DEL + data + '\n'
                     )
             comp.write(' '.join([str(label), filename.rstrip(".png")]))
         label += 1

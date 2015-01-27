@@ -28,6 +28,7 @@ import os, random
 _IMAGE_DIR = "images"
 _ANNO_DIR  = "annotations"
 _SIZE      = 128, 128
+_DEL       = ','
 
 classDict = {}
 with open(_ANNO_DIR + "/list.txt") as f:
@@ -38,8 +39,8 @@ with open(_ANNO_DIR + "/list.txt") as f:
             if not class_id in classDict:
                 classDict[class_id] = items[1]
 
-train = open("train.txt", 'w')
-test  = open("test.txt", 'w')
+train = open("train.csv", 'w')
+test  = open("test.csv", 'w')
 
 files = os.listdir(_IMAGE_DIR)
 for filename in files:
@@ -52,16 +53,16 @@ for filename in files:
     output_image = resize_image
 
     # ref. https://github.com/laughing/grbm_sample/blob/master/img2csv.py
-    data = ' '.join([str(r) for r in (numpy.asarray(output_image).flatten() / 255.0).tolist()])
+    data = _DEL.join([str(r) for r in (numpy.asarray(output_image).flatten() / 255.0).tolist()])
     if rand == 0:
         test.write(
                 str(classDict[class_id]) # Label information must be Number.
-                + ' ' + data + '\n'
+                + _DEL + data + '\n'
                 )
     else:
         train.write(
                 str(classDict[class_id])
-                + ' ' + data + '\n'
+                + _DEL + data + '\n'
                 )
 train.close()
 test.close()
