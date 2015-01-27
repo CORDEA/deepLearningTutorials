@@ -22,5 +22,5 @@ import pickle
 
 
 # ref. http://tanopy.blog79.fc2.com/blog-entry-118.html
-data = CSVDataset(path='train.csv', expect_headers=False, delimiter=' ')
+data = CSVDataset(path='train.txt', expect_headers=False, delimiter=' ')
 pickle.dump(data, open('train.pkl','w'))

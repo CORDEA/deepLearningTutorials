@@ -56,12 +56,12 @@ for filename in files:
     if rand == 0:
         test.write(
                 str(classDict[class_id]) # Label information must be Number.
-                + ',' + data + '\n'
+                + ' ' + data + '\n'
                 )
     else:
         train.write(
                 str(classDict[class_id])
-                + ',' + data + '\n'
+                + ' ' + data + '\n'
                 )
 train.close()
 test.close()

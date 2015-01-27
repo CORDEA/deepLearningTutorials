@@ -40,7 +40,7 @@ with open(sys.argv[1], 'w') as f:
             data = ' '.join([str(r) for r in (numpy.asarray(output_image).flatten() / 255.0).tolist()])
             train.write(
                     str(label) # Label information must be Number.
-                    + ',' + data + '\n'
+                    + ' ' + data + '\n'
                     )
             comp.write(' '.join([str(label), filename.rstrip(".png")]))
         label += 1
