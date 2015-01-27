@@ -22,6 +22,7 @@ __date__   =  "2015-01-27"
 
 import numpy
 from PIL import Image, ImageOps
+from os import path
 import os
 
 _IMAGE_DIR = "images"
