@@ -23,11 +23,11 @@ __date__   =  "2015-01-27"
 import numpy
 from PIL import Image, ImageOps
 from os import path
-import os
+import os, random
 
 _IMAGE_DIR = "images"
 _ANNO_DIR  = "annotations"
-_SIZE      = 256, 256
+_SIZE      = 128, 128
 
 classDict = {}
 with open(_ANNO_DIR + "/list.txt") as f:
@@ -39,9 +39,11 @@ with open(_ANNO_DIR + "/list.txt") as f:
                 classDict[class_id] = items[1]
 
 train = open("train.txt", 'w')
+test  = open("test.txt", 'w')
 
 files = os.listdir(_IMAGE_DIR)
 for filename in files:
+    rand = random.randint(0, 100)
     class_id = filename.split('_')[0]
 
     input_image  = Image.open(path.join(_IMAGE_DIR, filename))
@@ -51,8 +53,15 @@ for filename in files:
 
     # ref. https://github.com/laughing/grbm_sample/blob/master/img2csv.py
     data = ' '.join([str(r) for r in (numpy.asarray(output_image).flatten() / 255.0).tolist()])
-    train.write(
-            str(classDict[class_id]) # Label information must be Number.
-            + ',' + data + '\n'
-            )
+    if rand == 0:
+        test.write(
+                str(classDict[class_id]) # Label information must be Number.
+                + ',' + data + '\n'
+                )
+    else:
+        train.write(
+                str(classDict[class_id])
+                + ',' + data + '\n'
+                )
 train.close()
+test.close()
