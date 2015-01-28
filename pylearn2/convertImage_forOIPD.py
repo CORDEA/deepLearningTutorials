@@ -25,10 +25,10 @@ from PIL import Image, ImageOps
 from os import path
 import os, random
 
-_IMAGE_DIR = "images"
-_ANNO_DIR  = "annotations"
-_SIZE      = 128, 128
-_DEL       = ','
+_IMAGE_DIR = "images"       # images foloder path
+_ANNO_DIR  = "annotations"  # annotations folder path
+_SIZE      = 128, 128       # image size
+_DEL       = ','            # output file delimiter
 
 classDict = {}
 with open(_ANNO_DIR + "/list.txt") as f:

@@ -18,8 +18,7 @@ __Author__ =  "Yoshihiro Tanaka"
 __date__   =  "2015-01-23"
 
 from pylearn2.datasets.csv_dataset import CSVDataset
-import pickle
-
+import sys, pickle
 
 # ref. http://tanopy.blog79.fc2.com/blog-entry-118.html
 data = CSVDataset(path=sys.argv[1] + '.csv', expect_headers=False, delimiter=',')
