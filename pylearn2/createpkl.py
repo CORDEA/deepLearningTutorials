@@ -21,5 +21,8 @@ from pylearn2.datasets.csv_dataset import CSVDataset
 import sys, pickle
 
 # ref. http://tanopy.blog79.fc2.com/blog-entry-118.html
-data = CSVDataset(path=sys.argv[1] + '.csv', expect_headers=False, delimiter=',')
+try:
+    data = CSVDataset(path=sys.argv[1] + '.csv', expect_headers=False, one_hot=True)
+except:
+    data = CSVDataset(path=sys.argv[1] + '.csv', expect_headers=False)
 pickle.dump(data, open(sys.argv[1] + '.pkl','w'))

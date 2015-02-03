@@ -23,46 +23,70 @@ __date__   =  "2015-01-27"
 import numpy
 from PIL import Image, ImageOps
 from os import path
-import os, random
+import os, sys, random, re
 
-_IMAGE_DIR = "images"       # images foloder path
-_ANNO_DIR  = "annotations"  # annotations folder path
-_SIZE      = 128, 128       # image size
-_DEL       = ','            # output file delimiter
 
-classDict = {}
-with open(_ANNO_DIR + "/list.txt") as f:
-    for line in f:
-        if not '#' in line:
-            items = line.rstrip().split()
-            class_id = items[0].split('_')[0]
-            if not class_id in classDict:
-                classDict[class_id] = items[1]
-
-train = open("train.csv", 'w')
-test  = open("test.csv", 'w')
-
-files = os.listdir(_IMAGE_DIR)
-for filename in files:
-    rand = random.randint(0, 100)
-    class_id = filename.split('_')[0]
-
-    input_image  = Image.open(path.join(_IMAGE_DIR, filename))
-    resize_image = input_image.resize(_SIZE)
-    #output_image = ImageOps.grayscale(resize_image)
-    output_image = resize_image
-
-    # ref. https://github.com/laughing/grbm_sample/blob/master/img2csv.py
-    data = _DEL.join([str(r) for r in (numpy.asarray(output_image).flatten() / 255.0).tolist()])
-    if rand == 0:
+def output(code, ID, data):
+    if code == 1:
         test.write(
-                str(classDict[class_id]) # Label information must be Number.
+                str(ID) # Label information must be Number.
                 + _DEL + data + '\n'
                 )
     else:
         train.write(
-                str(classDict[class_id])
+                str(ID)
                 + _DEL + data + '\n'
                 )
-train.close()
-test.close()
+
+def glue(count, ID, data):
+    if count[class_id] == 1:
+        output(1, ID, data)
+    else:
+        output(0, ID, data)
+
+def main():
+    _IMAGE_DIR = "images"       # images foloder path
+    _ANNO_DIR  = "annotations"  # annotations folder path
+    _SIZE      = 128, 128       # image size
+    _DEL       = ','            # output file delimiter
+    _SMALL     = True
+
+    classDict = {}
+    with open(_ANNO_DIR + "/list.txt") as f:
+        for line in f:
+            if not '#' in line:
+                items = line.rstrip().split()
+                class_id = re.split("_[0-9]+", items[0])[0]
+                if not class_id in classDict:
+                    classDict[class_id] = items[1]
+
+    train = open("train_small.csv", 'w')
+    test  = open("test_small.csv", 'w')
+
+    count = {}
+
+    files = os.listdir(_IMAGE_DIR)
+    for filename in files:
+        class_id = re.split("_[0-9]+.jpg", filename)[0]
+
+        input_image  = Image.open(path.join(_IMAGE_DIR, filename))
+        resize_image = input_image.resize(_SIZE)
+        #output_image = ImageOps.grayscale(resize_image)
+        output_image = resize_image
+
+        # ref. https://github.com/laughing/grbm_sample/blob/master/img2csv.py
+        data = [str(r) for r in (numpy.asarray(output_image).flatten() / 255.0).tolist()]
+        if len(data) != _SIZE[0] * _SIZE[1] * 3: # RGB
+            sys.stderr.write("error: %d\n" % (len(data)))
+        else:
+            data = _DEL.join(data)
+            ID   = classDict[class_id]
+            count[class_id] = count.get(class_id, 1) + 1
+
+            if _SMALL:
+                if count[class_id] <= 5:
+                    glue(count[class_id], ID, data)
+            else:
+                glue(count[class_id], ID, data)
+    train.close()
+    test.close()
