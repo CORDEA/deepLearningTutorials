@@ -25,32 +25,25 @@ from PIL import Image, ImageOps
 from os import path
 import os, sys, random, re
 
+_IMAGE_DIR = "images"       # images foloder path
+_ANNO_DIR  = "annotations"  # annotations folder path
+_SIZE      = 128, 128       # image size
+_SMALL     = True
+_DEL       = ','            # output file delimiter
 
-def output(code, ID, data):
-    if code == 1:
-        test.write(
+def output(count, ID, data, files):
+    if count == 1:
+        files[1].write(
                 str(ID) # Label information must be Number.
                 + _DEL + data + '\n'
                 )
     else:
-        train.write(
-                str(ID)
+        files[0].write(
+                str(ID) # Label information must be Number.
                 + _DEL + data + '\n'
                 )
 
-def glue(count, ID, data):
-    if count[class_id] == 1:
-        output(1, ID, data)
-    else:
-        output(0, ID, data)
-
 def main():
-    _IMAGE_DIR = "images"       # images foloder path
-    _ANNO_DIR  = "annotations"  # annotations folder path
-    _SIZE      = 128, 128       # image size
-    _DEL       = ','            # output file delimiter
-    _SMALL     = True
-
     classDict = {}
     with open(_ANNO_DIR + "/list.txt") as f:
         for line in f:
@@ -75,18 +68,22 @@ def main():
         output_image = resize_image
 
         # ref. https://github.com/laughing/grbm_sample/blob/master/img2csv.py
-        data = [str(r) for r in (numpy.asarray(output_image).flatten() / 255.0).tolist()]
+        data = [str(int(r*100)) for r in (numpy.asarray(output_image).flatten() / 255.0).tolist()]
         if len(data) != _SIZE[0] * _SIZE[1] * 3: # RGB
             sys.stderr.write("error: %d\n" % (len(data)))
         else:
             data = _DEL.join(data)
             ID   = classDict[class_id]
-            count[class_id] = count.get(class_id, 1) + 1
+            count[class_id] = count.get(class_id, 0) + 1
 
             if _SMALL:
                 if count[class_id] <= 5:
-                    glue(count[class_id], ID, data)
+                    output(count[class_id], ID, data, [train, test])
             else:
-                glue(count[class_id], ID, data)
+                output(count[class_id], ID, data, [train, test])
     train.close()
     test.close()
+
+
+if __name__ == '__main__':
+    main()
