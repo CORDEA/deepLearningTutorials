@@ -47,11 +47,10 @@ class HogeDataset(DenseDesignMatrix):
 
         filename = which_set + ".csv"
         path = base_path + '/' + filename
+        path = preprocess(path)
 
         if not os.path.isfile(path):
             raise ValueError("Unrecognized dataset name: " + which_set)
-
-        path = preprocess(path)
 
         # If the file name contains a "train", header is True.
         if "train" in which_set:
