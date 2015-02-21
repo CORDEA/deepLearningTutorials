@@ -1,5 +1,6 @@
 """
-modified several points for my programs.
+Yoshihiro Tanaka has modified several points for my programs.
+forked from https://github.com/laughing/grbm_sample
 """
 
 __authors__    = ["Ian Goodfellow", "Yoshihiro Tanaka <feria.primavera@gmail.com>"]
@@ -15,16 +16,20 @@ import os
 from pylearn2.datasets.dense_design_matrix import DefaultViewConverter
 from pylearn2.datasets.dense_design_matrix import DenseDesignMatrix
 from pylearn2.utils.string_utils import preprocess
+from convert_image import convert_image
 
 class HogeDataset(DenseDesignMatrix):
-    def __init__(self, which_set,
-            base_path = '${PYLEARN2_DATA_PATH}/hoge',
-            start = None,
-            stop = None,
-            preprocessor = None,
-            fit_preprocessor = False,
-            axes = ('b', 0, 1, 'c'),
-            fit_test_preprocessor = False):
+    def __init__(self,
+            which_set,
+            base_path               = '${PYLEARN2_DATA_PATH}/hoge',
+            start                   = None,
+            stop                    = None,
+            preprocessor            = None,
+            fit_preprocessor        = False,
+            axes                    = ('b', 0, 1, 'c'),
+            fit_test_preprocessor   = False,
+            image_to_csv            = False
+            ):
         """
         which_set: A string specifying which portion of the dataset
             to load. Valid values are 'train' or 'public_test'
@@ -49,6 +54,11 @@ class HogeDataset(DenseDesignMatrix):
         path = base_path + '/' + filename
         path = preprocess(path)
 
+        image_size = 128
+        color      = False
+        if image_to_csv:
+            convert_image(preprocess(base_path) + '/', filename, image_size, color)
+
         if not os.path.isfile(path):
             raise ValueError("Unrecognized dataset name: " + which_set)
 
@@ -69,8 +79,12 @@ class HogeDataset(DenseDesignMatrix):
             if y is not None:
                 y = y[start:stop, :]
 
-        image_size = 128
-        view_converter = DefaultViewConverter(shape=[image_size,image_size,1], axes=axes)
+        if color:
+            color_shape = 3
+        else:
+            color_shape = 1
+
+        view_converter = DefaultViewConverter(shape=[image_size, image_size, color_shape], axes=axes)
 
         super(HogeDataset, self).__init__(X=X, y=y, view_converter=view_converter)
 
