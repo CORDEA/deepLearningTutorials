@@ -14,11 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
+import pickle
+from pylearn2.datasets.csv_dataset import CSVDataset
+
 __Author__ = "Yoshihiro Tanaka"
 __date__ = "2015-01-23"
-
-from pylearn2.datasets.csv_dataset import CSVDataset
-import sys, pickle
 
 # ref. http://tanopy.blog79.fc2.com/blog-entry-118.html
 try:

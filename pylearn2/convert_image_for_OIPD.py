@@ -14,16 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-__Author__ = "Yoshihiro Tanaka"
-__date__ = "2015-01-27"
-
 # for The Oxford-IIIT Pet Dataset.
 # Link: http://www.robots.ox.ac.uk/~vgg/data/pets/
 
 import numpy
+import os
+import sys
+import random
+import re
 from PIL import Image, ImageOps
 from os import path
-import os, sys, random, re
+
+__Author__ = "Yoshihiro Tanaka"
+__date__ = "2015-01-27"
 
 _IMAGE_DIR = "images"  # images foloder path
 _ANNO_DIR = "annotations"  # annotations folder path
@@ -34,23 +37,19 @@ _DEL = ','  # output file delimiter
 
 def output(count, id, data, files):
     if count == 1:
-        files[1].write(
-            str(id)  # Label information must be Number.
-            + _DEL + data + '\n')
+        files[1].write(str(id) + _DEL + data + '\n')
     else:
-        files[0].write(
-            str(id)  # Label information must be Number.
-            + _DEL + data + '\n')
+        files[0].write(str(id) + _DEL + data + '\n')
 
 
 def main():
     classDict = {}
     with open(_ANNO_DIR + "/list.txt") as f:
         for line in f:
-            if not '#' in line:
+            if '#' not in line:
                 items = line.rstrip().split()
                 class_id = re.split("_[0-9]+", items[0])[0]
-                if not class_id in classDict:
+                if class_id not in classDict:
                     classDict[class_id] = items[1]
 
     train = open("train_small.csv", 'w')
@@ -64,7 +63,7 @@ def main():
 
         input_image = Image.open(path.join(_IMAGE_DIR, filename))
         resize_image = input_image.resize(_SIZE)
-        #output_image = ImageOps.grayscale(resize_image)
+        # output_image = ImageOps.grayscale(resize_image)
         output_image = resize_image
 
         # ref. https://github.com/laughing/grbm_sample/blob/master/img2csv.py
